@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div>
+        <h1 id="current-cell">
+            No cell selected
+        </h1>
+        <button id="bold-btn">
+            B
+        </button>
+        <button id="italic-btn">
+            I
+        </button>
+        <button id="underline-btn">
+            U
+        </button>
+        <button id="left-btn">
+            left
+        </button>
+        <button id="center-btn">
+            Center
+        </button>
+        <button id="right-btn">
+            Right
+        </button>
+
+
+        <input list="fontStyles" id="Font-style-dropdown" placeholder="Choose or type a font style">
+        <datalist id="fontStyles">
+            <option value="sans-serif"></option>
+            <option value="monospace"></option>
+            <option value="cursive"></option>
+            <!-- Additional font styles can be added by the user -->
+        </datalist>
+        <select name="style" id="Font-style-size">
+            <option value="10px">10px</option>
+            <option value="12px">12px</option>
+            <option value="20px">20px</option>
+        </select>
+        <label  for="bgcolor">Bg color</label>
+        <input type="color" id="bgcolor"/>
+        <label  for="fontcolor">color</label>
+        <input type="color" id="fontcolor"/>
+
+        <button id="cut-text">
+            Cut
+        </button>
+        <button id="copy-text">Copy</button>
+        <button id="paste-text">Paste</button>
+        <button id="download" onclick="downloadmatrix()">Download</button>
+        <input id="upload-input" type="file" accept=".json"/>
+        
+    </div>
+    <table id="my-table">
+        <thead>
+            <tr id="table-head-row">
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="table-side-row">
+
+        </tbody>
+    </table>
+    <script src="script.js"></script>
+</body>
+</html>
