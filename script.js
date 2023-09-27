@@ -10,7 +10,13 @@ let currentcells;
 let prevcell;
 let cutCell;
 let lastpressbtn;
+
 let matrix= new Array(rows)
+let numSheets=1;
+let currentsheet=1;
+let prevSheet;
+let arrMatrix='arrMatrix';
+function createnewMAtrix(){
 
 for(let i=0;i<rows;i++){
     matrix[i]=new Array(cols);
@@ -19,6 +25,8 @@ for(let i=0;i<rows;i++){
         matrix[i][col]={};
     }
 }
+}
+createnewMAtrix();
 const currentcell= document.getElementById('current-cell');
 function colgen(typeofcell,tablerow,isinnertext,rownumber){
 for(let col=0;col<cols;col++){
@@ -81,13 +89,17 @@ function uploadMatrix(event){
 
     reader.onload=function(event){
         const filecontent=JSON.parse(event.target.result);
-        console.log(filecontent)
+       // console.log(filecontent)
+       matrix=filecontent;
+       renderMatrix();
     }
   }
  
 }
 
 uploadinput.addEventListener('input',uploadMatrix);
+
+
 
 
 
@@ -125,10 +137,12 @@ function focusHandler(cell){
     prevcell=currentcells;
 }
 const tablesiderow=document.getElementById('table-side-row');
+function tableBodyGen(){
+tablesiderow.innerHTML='';
+    
 for(let row=1;row<=rows;row++){
     const tr=document.createElement('tr');
     const th=document.createElement('th');
-
     th.innerText=row;
     th.setAttribute('id',row);
     tr.append(th);
@@ -137,6 +151,13 @@ for(let row=1;row<=rows;row++){
     tablesiderow.append(tr);
 
 }
+}
+tableBodyGen();
+
+if(localStorage.getItem(arrMatrix)){
+    matrix=JSON.parse(localStorage.getItem(arrMatrix))[0];
+   renderMatrix();
+  }
 //excel btns
 const boldbtn=document.getElementById('bold-btn');
 const italicbtn=document.getElementById('italic-btn');
@@ -151,6 +172,12 @@ const fontcolor=document.getElementById("fontcolor");
 const cutbtn=document.getElementById('cut-text');
 const copybtn=document.getElementById('copy-text');
 const pastebtn=document.getElementById('paste-text');
+const sheetno=document.getElementById("sheet-no");
+const buttoncontainer=document.getElementById("button-container");
+const addsheetbtn=document.getElementById("add-sheet-button");
+const savesheetbtn=document.getElementById("save-sheet-button");
+
+
 
 function CellsHighlighter(button,styleproperty,style,defaultstyle, resetButtons = []){
 button.addEventListener('click',()=>{
@@ -167,6 +194,8 @@ button.addEventListener('click',()=>{
    updateobjectmatrix();
 })
 }
+
+
 CellsHighlighter(boldbtn,"fontWeight","bold","normal");
 CellsHighlighter(italicbtn,"fontStyle","italic","normal");
 CellsHighlighter(underlinebtn,"textDecoration",'underline',"none");
@@ -233,4 +262,72 @@ pastebtn.addEventListener('click',()=>{
 
     updateobjectmatrix();
 })
+
+
+function gennextsheetbtn(){
+    const btn=document.createElement('button');
+    numSheets++;
+    currentsheet=numSheets;
+    btn.innerText=`sheet ${currentsheet}`;
+    btn.setAttribute('id',`sheet-${currentsheet}`)
+    btn.setAttribute('onclick','viewSheet(event)')
+    buttoncontainer.append(btn);
+}
+
+addsheetbtn.addEventListener('click',()=>{
+
+    gennextsheetbtn();
+    sheetno.innerText=`Sheet No-${currentsheet}`;
+
+    //add next sheet btn
+    //save matrix
+    saveMatrix();
+    //clean matrix
+    createnewMAtrix();
+    //clean html
+    tableBodyGen();
+
+
+})
+
+function saveMatrix(){
+    if(localStorage.getItem(arrMatrix)){
+        let tempArrmatrix=JSON.parse(localStorage.getItem(arrMatrix));
+        tempArrmatrix.push(matrix);
+        localStorage.setItem(arrMatrix,JSON.stringify(tempArrmatrix));
+
+    }else{
+        //pressing add sheet for first time
+        let tempArrmatrix=[matrix];
+        localStorage.setItem(arrMatrix,JSON.stringify(tempArrmatrix));
+
+    }
+}
+function renderMatrix(){
+    matrix.forEach(row=>{
+        row.forEach(CellObj=>{
+          if(CellObj.id){
+            let currentCell=document.getElementById(CellObj.id);
+            currentCell.innerText=CellObj.text;
+            currentCell.style=CellObj.style;
+          }
+        })
+    })
+}
+
+function viewSheet(event){
+  prevSheet=currentsheet;
+
+  currentsheet=event.target.id.split('-')[1];
+  let matrixarr=JSON.parse(localStorage.getItem(arrMatrix));
+  matrixarr[prevSheet-1]=matrix;
+  localStorage.setItem(arrMatrix,JSON.stringify(matrixarr));
+  
+  matrix=matrixarr[currentsheet-1];
+  tableBodyGen();
+
+  renderMatrix();
+
+}
+
 
